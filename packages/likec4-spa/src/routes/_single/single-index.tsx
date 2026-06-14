@@ -5,38 +5,76 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
-import { Link } from '@tanstack/react-router'
-
-import { StaticLikeC4Diagram } from '@likec4/diagram'
-import { useEffect, useState } from 'react'
-
+import type { LikeC4ViewsFolder } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
+import { StaticLikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { Markdown, NavigationPanel } from '@likec4/diagram/custom'
 import { css } from '@likec4/styles/css'
-import { Box, Burger, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
+import {
+  Anchor,
+  Box,
+  Breadcrumbs,
+  Burger,
+  Card,
+  Container,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  UnstyledButton,
+} from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
+import { IconChevronRight, IconFolderFilled, IconHome, IconLayoutDashboard } from '@tabler/icons-react'
 import { pageTitle } from 'likec4:app-config'
+import { useEffect, useMemo, useState } from 'react'
 import { randomInteger } from 'remeda'
 import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { OverviewSearch } from '../../components/search/OverviewSearch'
 import { SidebarDrawerOps, useSidebarPinned } from '../../components/sidebar/state'
-import { filterLandingPageViews } from '../../filterLandingPageViews'
 import { useCurrentProject, useLikeC4Views } from '../../hooks'
 import * as styles from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
+  validateSearch: (search: Record<string, unknown>): { folder?: string } => ({
+    folder: typeof search.folder === 'string' && search.folder.length > 0 ? search.folder : undefined,
+  }),
   component: RouteComponent,
 })
 
+const PREVIEW_LIMIT = 6
+
 function RouteComponent() {
+  const model = useLikeC4Model()
   const allViews = useLikeC4Views()
-  const { landingPage, title: projectTitle } = useCurrentProject()
+  const { title: projectTitle } = useCurrentProject()
   useDocumentTitle(projectTitle ?? pageTitle)
-  const views = filterLandingPageViews(allViews, landingPage)
+
   const [pinned] = useSidebarPinned()
+  // Current Explorer folder lives in the URL (?folder=...) so it is shareable,
+  // works with browser back/forward, and can be driven from the sidebar.
+  const navigate = Route.useNavigate()
+  const { folder: folderPath = '' } = Route.useSearch()
+  const goToFolder = (path: string) => navigate({ to: '/single-index', search: path ? { folder: path } : {} })
+
+  // Layouted views (with bounds) for previews, keyed by id.
+  const viewsById = useMemo(() => new Map(allViews.map((v) => [v.id, v])), [allViews])
+
+  // Current folder of the Explorer (native LikeC4 view folders).
+  const folder = useMemo(() => {
+    try {
+      return folderPath ? model.viewFolder(folderPath) : model.rootViewFolder
+    } catch {
+      return model.rootViewFolder
+    }
+  }, [model, folderPath])
+
+  const subFolders = folder.folders
+  const folderViews = folder.views
+
   return (
     <Container size={'xl'}>
       <div
@@ -74,6 +112,9 @@ function RouteComponent() {
           </NavigationPanel.Body>
         </NavigationPanel.Root>
       </div>
+
+      <FolderBreadcrumbs folder={folder} onNavigate={goToFolder} />
+
       <SimpleGrid
         p={{ base: 'md', sm: 'md' }}
         pt={{ base: 'sm', sm: 'sm' }}
@@ -81,13 +122,126 @@ function RouteComponent() {
         spacing={{ base: 10, sm: 'xl' }}
         verticalSpacing={{ base: 'md', sm: 'xl' }}
       >
-        {views.map((v) => <ViewCard key={v.id} view={v} />)}
+        {subFolders.map((f) => <FolderTile key={f.path} folder={f} onOpen={() => goToFolder(f.path)} />)}
+        {folderViews.map((vm) => {
+          const view = viewsById.get(vm.id)
+          // vm.title is the short title (last segment); view.title is the full folder path.
+          return view ? <ViewCard key={vm.id} view={view} title={vm.title ?? vm.id} /> : null
+        })}
       </SimpleGrid>
     </Container>
   )
 }
 
-function ViewCard({ view }: { view: DiagramView }) {
+function FolderBreadcrumbs({ folder, onNavigate }: {
+  folder: LikeC4ViewsFolder
+  onNavigate: (path: string) => void
+}) {
+  // Build the trail from the path. Avoid folder.breadcrumbs: it throws on the root
+  // folder, and the React Compiler may hoist it out of the conditional (eager eval).
+  const trail: Array<{ title: string; path: string }> = []
+  if (!folder.isRoot) {
+    let acc = ''
+    for (const seg of folder.path.split('/')) {
+      acc = acc ? `${acc}/${seg}` : seg
+      trail.push({ title: seg, path: acc })
+    }
+  }
+  return (
+    <Breadcrumbs
+      separator={<IconChevronRight size={14} opacity={0.5} />}
+      px={'md'}
+      pt={'sm'}
+      styles={{ separator: { marginInline: 6 } }}
+    >
+      <Anchor component={UnstyledButton} onClick={() => onNavigate('')} c={folder.isRoot ? undefined : 'dimmed'}>
+        <Group gap={4} wrap="nowrap">
+          <IconHome size={15} />
+          <span>Overview</span>
+        </Group>
+      </Anchor>
+      {trail.map((f, i) => {
+        const isLast = i === trail.length - 1
+        return (
+          <Anchor
+            key={f.path}
+            component={UnstyledButton}
+            onClick={() => onNavigate(f.path)}
+            c={isLast ? undefined : 'dimmed'}
+            fw={isLast ? 600 : undefined}
+          >
+            {f.title}
+          </Anchor>
+        )
+      })}
+    </Breadcrumbs>
+  )
+}
+
+function FolderTile({ folder, onOpen }: {
+  folder: LikeC4ViewsFolder
+  onOpen: () => void
+}) {
+  const childFolders = folder.folders
+  const childViews = folder.views
+  const children = [
+    ...childFolders.map((f) => ({ kind: 'folder' as const, key: f.path, name: f.title })),
+    ...childViews.map((v) => ({ kind: 'view' as const, key: v.id, name: v.title ?? v.id })),
+  ]
+  const preview = children.slice(0, PREVIEW_LIMIT)
+  const rest = children.length - preview.length
+
+  return (
+    <Card
+      shadow="xs"
+      padding="lg"
+      radius="sm"
+      withBorder
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen()
+        }
+      }}
+      className={css({
+        cursor: 'pointer',
+        transition: 'fast',
+        _hover: { borderColor: 'likec4.palette.loContrast', transform: 'translateY(-2px)' },
+      })}
+    >
+      <Group gap={'sm'} wrap="nowrap">
+        <ThemeIcon size={'lg'} variant="light" color="violet">
+          <IconFolderFilled size={22} />
+        </ThemeIcon>
+        <Box style={{ minWidth: 0 }}>
+          <Text fw={600} truncate>{folder.title}</Text>
+          <Text size="xs" c="dimmed">
+            {childFolders.length > 0 && `${childFolders.length} folder${childFolders.length > 1 ? 's' : ''}`}
+            {childFolders.length > 0 && childViews.length > 0 && ' · '}
+            {childViews.length > 0 && `${childViews.length} view${childViews.length > 1 ? 's' : ''}`}
+          </Text>
+        </Box>
+      </Group>
+
+      <Stack gap={2} mt="md">
+        {preview.map((c) => (
+          <Group key={c.key} gap={6} wrap="nowrap" style={{ opacity: 0.85 }}>
+            {c.kind === 'folder'
+              ? <IconFolderFilled size={13} style={{ flexShrink: 0, opacity: 0.7 }} />
+              : <IconLayoutDashboard size={13} style={{ flexShrink: 0, opacity: 0.7 }} />}
+            <Text size="sm" truncate>{c.name}</Text>
+          </Group>
+        ))}
+        {rest > 0 && <Text size="xs" c="dimmed" mt={2}>+{rest} more</Text>}
+      </Stack>
+    </Card>
+  )
+}
+
+function ViewCard({ view, title }: { view: DiagramView; title?: string }) {
   const [visible, setVisible] = useState(false)
   const { ref, inViewport } = useInViewport()
 
@@ -121,7 +275,7 @@ function ViewCard({ view }: { view: DiagramView }) {
       </Card.Section>
 
       <Group justify="space-between" mt="md">
-        <Text fw={500}>{view.title ?? view.id}</Text>
+        <Text fw={500}>{title ?? view.title ?? view.id}</Text>
       </Group>
 
       <Markdown
