@@ -26,7 +26,7 @@ import {
   IconLayoutDashboard,
   IconStack2,
 } from '@tabler/icons-react'
-import { useNavigate } from '@tanstack/react-router'
+import { useLocation, useMatches, useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
@@ -83,33 +83,64 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
   const [diagram] = useCurrentView()
   const viewId = diagram?.id ?? null
 
+  // On the Overview page, sync to its ?folder= level instead of a view.
+  const isOverview = useMatches({
+    select: (matches) => matches.some((m) => m.routeId === '/_single/single-index'),
+  })
+  // Read the full URL search (DiagramsTree lives in the parent `_single` layout,
+  // so useSearch scoped to a route wouldn't see the child's `folder` param).
+  const location = useLocation()
+  const folderParam = typeof (location.search as { folder?: string }).folder === 'string'
+    ? (location.search as { folder?: string }).folder!
+    : ''
+  const overviewFolder = isOverview ? folderParam : ''
+
+  // Node to highlight, and the folder branch to expand (folder values are '@fs/'-prefixed).
+  const selectedValue = isOverview
+    ? (overviewFolder ? `@fs/${overviewFolder}` : null)
+    : viewId
+  const expandFolderPath = isOverview
+    ? overviewFolder
+    : (viewId ? (model.findView(viewId)?.folder?.path ?? '') : '')
+
+  const ancestorsExpandedState = (folderPath: string): Record<string, boolean> => {
+    const state: Record<string, boolean> = {}
+    if (folderPath) {
+      let path = '@fs'
+      for (const segment of folderPath.split('/')) {
+        path += `/${segment}`
+        state[path] = true
+      }
+    }
+    return state
+  }
+
+  // Initial state is set at tree creation: an imperative tree.expand() in an
+  // effect runs before Mantine initialises the tree, so it would be ignored on
+  // first mount (e.g. a deep link). The effects below handle later navigation.
   const tree = useTree({
     multiple: false,
+    initialExpandedState: ancestorsExpandedState(expandFolderPath),
+    initialSelectedState: selectedValue ? [selectedValue] : [],
   })
-
-  // Native folder of the current view (matches the by-folders grouping).
-  const folderPath = viewId ? (model.findView(viewId)?.folder?.path ?? '') : ''
 
   useUpdateEffect(() => {
     tree.collapseAllNodes()
   }, [groupBy])
 
   useEffect(() => {
-    if (folderPath) {
-      const segments = folderPath.split('/')
-      let path = '@fs'
-      for (const segment of segments) {
-        path += `/${segment}`
-        tree.expand(path)
-      }
+    for (const value of Object.keys(ancestorsExpandedState(expandFolderPath))) {
+      tree.expand(value)
     }
-  }, [folderPath, groupBy])
+  }, [expandFolderPath, groupBy])
 
   useEffect(() => {
-    if (viewId) {
-      tree.select(viewId)
+    if (selectedValue) {
+      tree.select(selectedValue)
+    } else {
+      tree.clearSelected()
     }
-  }, [viewId])
+  }, [selectedValue])
 
   const theme = useComputedColorScheme()
 
