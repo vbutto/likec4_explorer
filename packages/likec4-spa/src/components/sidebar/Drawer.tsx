@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Drawer, Group, rem, ScrollArea, SegmentedControl, Tooltip } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
-import { IconArrowLeft, IconPin, IconPinnedOff, IconStarFilled } from '@tabler/icons-react'
+import { IconArrowLeft, IconPin, IconPinnedOff } from '@tabler/icons-react'
 import { Link, useMatches } from '@tanstack/react-router'
 import { memo } from 'react'
 import type { GroupBy } from './data'
@@ -46,22 +46,6 @@ function SidebarControls({ grouping, setGrouping, pinned, onTogglePin }: {
         onChange={setGrouping as any}
         data={groupingData}
       />
-      <Button
-        leftSection={<IconStarFilled size={12} stroke={2} />}
-        color="dimmed"
-        variant="subtle"
-        px={rem(5)}
-        styles={{ section: { marginInlineEnd: 4 } }}
-        size="xs"
-        renderRoot={(props) => (
-          <Link
-            to="/view/$viewId"
-            params={{ viewId: 'index' }}
-            {...props}
-          />
-        )}>
-        Open index
-      </Button>
       <Tooltip label={pinned ? 'Unpin panel' : 'Pin panel'} fz="xs" withinPortal>
         <ActionIcon
           onClick={onTogglePin}

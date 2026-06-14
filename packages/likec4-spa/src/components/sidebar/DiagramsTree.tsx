@@ -25,7 +25,6 @@ import {
   IconFolderOpen,
   IconLayoutDashboard,
   IconStack2,
-  IconStarFilled,
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
@@ -67,6 +66,17 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
       to: '/view/$viewId/',
       viewTransition: false,
       params: { viewId },
+    })
+  }
+  // Clicking a folder shows that hierarchy level in the Overview (main area).
+  // Folder node values are prefixed with '@fs/' (see buildDiagramTreeData).
+  const navigateToFolder = (nodeValue: string) => {
+    const path = nodeValue.startsWith('@fs/') ? nodeValue.slice(4) : ''
+    SidebarDrawerOps.close()
+    void navigate({
+      to: '/single-index',
+      viewTransition: false,
+      search: path ? { folder: path } : {},
     })
   }
   const model = useLikeC4Model()
@@ -135,8 +145,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
               }}
               leftSection={
                 <>
-                  {!hasChildren && node.value === 'index' && <IconStarFilled size={14} opacity={0.7} />}
-                  {!hasChildren && node.value !== 'index' && isTreeNodeData(node) && (
+                  {!hasChildren && isTreeNodeData(node) && (
                     <>
                       {node.type === 'deployment-view' && <IconStack2 size={14} />}
                       {node.type === 'view' && <IconLayoutDashboard size={14} />}
@@ -146,12 +155,16 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
                 </>
               }
               {...elementProps}
-              {...(!hasChildren && {
-                onClick: (e) => {
-                  e.stopPropagation()
+              onClick={(e) => {
+                e.stopPropagation()
+                if (hasChildren) {
+                  // Folder: show its level in the Overview and expand/collapse the node.
+                  tree.toggleExpanded(node.value)
+                  navigateToFolder(node.value)
+                } else {
                   navigateTo(node.value)
-                },
-              })}
+                }
+              }}
             >
               {node.label}
             </Button>
