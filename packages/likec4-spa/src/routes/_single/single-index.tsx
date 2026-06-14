@@ -22,8 +22,7 @@ import { pageTitle } from 'likec4:app-config'
 import { randomInteger } from 'remeda'
 import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { OverviewSearch } from '../../components/search/OverviewSearch'
-import { SidebarDrawer } from '../../components/sidebar/Drawer'
-import { SidebarDrawerOps } from '../../components/sidebar/state'
+import { SidebarDrawerOps, useSidebarPinned } from '../../components/sidebar/state'
 import { filterLandingPageViews } from '../../filterLandingPageViews'
 import { useCurrentProject, useLikeC4Views } from '../../hooks'
 import * as styles from './index.css'
@@ -37,9 +36,9 @@ function RouteComponent() {
   const { landingPage, title: projectTitle } = useCurrentProject()
   useDocumentTitle(projectTitle ?? pageTitle)
   const views = filterLandingPageViews(allViews, landingPage)
+  const [pinned] = useSidebarPinned()
   return (
     <Container size={'xl'}>
-      <SidebarDrawer />
       <div
         className={css({
           containerName: 'likec4-root',
@@ -59,7 +58,7 @@ function RouteComponent() {
         <NavigationPanel.Root css={{ position: 'relative', width: 'max-content', margin: '0' }}>
           <NavigationPanel.Body>
             <div style={{ width: 0, height: 36 }} aria-hidden />
-            <Burger size="sm" onClick={SidebarDrawerOps.open} aria-label="Toggle navigation" />
+            {!pinned && <Burger size="sm" onClick={SidebarDrawerOps.open} aria-label="Toggle navigation" />}
             <NavigationPanel.Logo
               css={{ flexShrink: 0 }}
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

@@ -50,8 +50,13 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
-export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
+export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true }: {
   groupBy: GroupBy | undefined
+  // Hover preview of the diagram. Disabled when the panel is docked (pinned):
+  // clicking a leaf navigates while the panel stays mounted, which leaves the
+  // Mantine HoverCard orphaned (a stuck white rectangle). In the overlay drawer
+  // the click closes the whole drawer, so the preview unmounts cleanly.
+  showPreview?: boolean
 }) => {
   const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
@@ -110,7 +115,8 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
         }}
         levelOffset={'md'}
         renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
-          <DiagramPreviewHoverCard diagram={!hasChildren ? views.find((v) => v.id === node.value) : undefined}>
+          <DiagramPreviewHoverCard
+            diagram={!hasChildren && showPreview ? views.find((v) => v.id === node.value) : undefined}>
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
@@ -152,7 +158,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       />
     </Box>
   )
-}, (prev, next) => prev.groupBy === next.groupBy)
+}, (prev, next) => prev.groupBy === next.groupBy && prev.showPreview === next.showPreview)
 
 function DiagramPreviewHoverCard({ diagram, children }: PropsWithChildren<{ diagram: DiagramView | undefined }>) {
   const ratio = diagram ? Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300) : 1
