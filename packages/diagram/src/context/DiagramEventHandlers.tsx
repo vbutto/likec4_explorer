@@ -18,6 +18,7 @@ const defaultHandlers: Required<LikeC4DiagramEventHandlers> = {
   onCanvasClick: null,
   onCanvasDblClick: null,
   onLogoClick: null,
+  onOpenNavigation: null,
   onOpenSource: null,
   onInitialized: null,
   onLayoutTypeChange: null,

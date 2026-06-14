@@ -20,6 +20,7 @@ import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
+import { SidebarDrawerOps } from '../components/sidebar/state'
 import { useCurrentView } from '../hooks'
 
 export function ViewReact() {
@@ -79,11 +80,7 @@ export function ViewReact() {
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
-      onLogoClick={() => {
-        void navigate({
-          to: '/',
-        })
-      }}
+      onOpenNavigation={() => SidebarDrawerOps.open()}
     >
       <ListenForDynamicVariantChange />
       <OpenRelationshipBrowserFromUrl />

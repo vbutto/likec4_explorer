@@ -8,6 +8,7 @@ import { useActorRef, useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
+import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
@@ -88,7 +89,10 @@ NavigationPanel.displayName = 'NavigationPanel'
 
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
-  const opened = useSelector(actor, stateHasActiveTag)
+  const { onOpenNavigation } = useDiagramEventHandlers()
+  // When the host owns navigation, the built-in dropdown is disabled (logo and
+  // breadcrumbs become inert); navigation is opened via the explicit NavPanelButton.
+  const opened = useSelector(actor, stateHasActiveTag) && !onOpenNavigation
   const portalProps = useMantinePortalProps()
 
   return (

@@ -12,6 +12,7 @@ import { isDevelopment } from 'likec4:app-config'
 import { isAIAvailable, likec4rpc } from 'likec4:rpc'
 import { LazyAIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
+import { SidebarDrawerOps } from '../components/sidebar/state'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
 import { FocusElementFromUrl, ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
@@ -90,11 +91,7 @@ export function ViewEditor() {
         dynamicViewVariant={dynamic}
         onNavigateTo={onNavigateTo}
         onLayoutTypeChange={setLayoutType}
-        onLogoClick={() => {
-          void navigate({
-            to: '/',
-          })
-        }}
+        onOpenNavigation={() => SidebarDrawerOps.open()}
       >
         <ListenForDynamicVariantChange />
         <OpenRelationshipBrowserFromUrl />

@@ -17,6 +17,7 @@ import {
   LayoutWarning,
   LogoButton,
   NavigationButtons,
+  NavPanelButton,
   OpenSource,
   SearchControl,
   ToggleReadonly,
@@ -113,6 +114,7 @@ export const NavigationPanelControls = memo(() => {
 
   return (
     <AnimatePresence propagate mode="popLayout">
+      <NavPanelButton key="nav-panel-button" />
       <LogoButton key="logo-button" />
       {enableNavigationButtons && <NavigationButtons key="nav-buttons" />}
       <m.div

@@ -350,6 +350,10 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   // if set, will render a logo icon in the top left corner
   onLogoClick?: null | undefined | (() => void)
 
+  // if set, the host owns navigation: an explicit "open navigation" button is shown
+  // in the panel, the built-in navigation dropdown is disabled and the logo is inert.
+  onOpenNavigation?: null | undefined | (() => void)
+
   onOpenSource?: OnOpenSource<A> | null | undefined
 
   onInitialized?: OnInitialized | null | undefined
