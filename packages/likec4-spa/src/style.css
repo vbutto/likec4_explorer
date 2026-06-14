@@ -38,6 +38,21 @@ html, body {
   height: 70%;
 }
 
+/*
+ * Canvas cursor workaround.
+ * xyflow sets `cursor: grab` (and `grabbing` while panning) on the React Flow pane.
+ * Chromium fails to paint the grab/grabbing cursors over the GPU-composited pane
+ * when the display/zoom scale is not 100%, so the cursor visually disappears on the
+ * empty canvas. A plain `default` cursor paints reliably. These rules are unlayered,
+ * so they win over the `xyflow` cascade layer. Panning by drag still works.
+ */
+.react-flow__pane {
+  cursor: default;
+}
+.react-flow__pane.dragging {
+  cursor: default;
+}
+
 .transparent-bg {
   --likec4-background-color: transparent !important;
   --xy-background-color: transparent !important;
