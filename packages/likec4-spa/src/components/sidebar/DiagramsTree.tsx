@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DiagramView } from '@likec4/core/types'
-import { StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import {
   type TreeNodeData,
@@ -69,6 +69,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
       params: { viewId },
     })
   }
+  const model = useLikeC4Model()
   const [diagram] = useCurrentView()
   const viewId = diagram?.id ?? null
 
@@ -76,22 +77,23 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
     multiple: false,
   })
 
-  const sourcePath = diagram?.sourcePath ?? null
+  // Native folder of the current view (matches the by-folders grouping).
+  const folderPath = viewId ? (model.findView(viewId)?.folder?.path ?? '') : ''
 
   useUpdateEffect(() => {
     tree.collapseAllNodes()
   }, [groupBy])
 
   useEffect(() => {
-    if (sourcePath) {
-      const segments = sourcePath.split('/')
+    if (folderPath) {
+      const segments = folderPath.split('/')
       let path = '@fs'
       for (const segment of segments) {
         path += `/${segment}`
         tree.expand(path)
       }
     }
-  }, [sourcePath, groupBy])
+  }, [folderPath, groupBy])
 
   useEffect(() => {
     if (viewId) {

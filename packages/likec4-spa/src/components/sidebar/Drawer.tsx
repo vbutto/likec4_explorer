@@ -8,15 +8,15 @@ import { DiagramsTree } from './DiagramsTree'
 import { SIDEBAR_WIDTH, SidebarDrawerOps, useDrawerOpened, useSidebarPinned } from './state'
 
 const groupingData = [
-  { label: 'By files', value: 'by-files' },
   { label: 'By folders', value: 'by-folders' },
   { label: 'List', value: 'none' },
 ]
 
 const useGrouping = () =>
   useLocalStorage<GroupBy>({
-    key: 'sidebar-drawer-grouping',
-    defaultValue: 'by-files',
+    // New key: the previous one may hold the now-removed 'by-files' value.
+    key: 'likec4-sidebar-grouping',
+    defaultValue: 'by-folders',
   })
 
 /** Header controls shared by the overlay drawer and the docked panel. */

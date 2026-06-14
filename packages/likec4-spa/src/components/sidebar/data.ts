@@ -17,17 +17,10 @@ interface DiagramTreeNodeData {
   children?: DiagramTreeNodeData[]
 }
 
-export type GroupBy = 'by-files' | 'by-folders' | 'none'
+export type GroupBy = 'by-folders' | 'none'
 
 export const isTreeNodeData = (node: TreeNodeData): node is DiagramTreeNodeData =>
   'type' in node && ['file', 'folder', 'view', 'deployment-view'].includes(node.type as any)
-
-function dropFilename(relativePath: string) {
-  if (relativePath === '') {
-    return ''
-  }
-  return relativePath.split('/').slice(0, -1).join('/')
-}
 
 function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   const aChildren = a.children?.length ?? 0
@@ -74,11 +67,10 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
   for (const view of views) {
     let relativePath
     switch (groupBy) {
-      case 'by-files':
-        relativePath = view.$view.sourcePath ?? ''
-        break
       case 'by-folders':
-        relativePath = dropFilename(view.$view.sourcePath ?? '')
+        // Native LikeC4 view folder (from `views '<folder>'` blocks / title),
+        // not the file path. Authored hierarchy, independent of file layout.
+        relativePath = view.folder?.path ?? ''
         break
       case 'none':
         relativePath = ''
@@ -96,16 +88,13 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
     })
     if (parent !== root) {
       parent.children!.sort(compareTreeNodes)
-      if (groupBy === 'by-files' && parent.type !== 'file') {
-        parent.type = 'file'
-      }
     }
   }
 
   return root.children!.sort(compareTreeNodes)
 }
 
-export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
+export function useDiagramsTreeData(groupBy: GroupBy = 'by-folders') {
   const model = useLikeC4Model()
   return useMemo(() => buildDiagramTreeData([...model.views()], groupBy), [model, groupBy])
 }
