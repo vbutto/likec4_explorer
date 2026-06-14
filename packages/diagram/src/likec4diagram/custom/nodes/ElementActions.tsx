@@ -77,6 +77,7 @@ export function ElementActions({
       buttons.push({
         key: 'navigate',
         icon: <IconZoomScan />,
+        label: 'Open linked view',
         onClick: (e) => {
           e.stopPropagation()
           diagram.navigateTo(navigateTo, id)
@@ -87,6 +88,7 @@ export function ElementActions({
       buttons.push({
         key: 'relationships',
         icon: <IconTransform />,
+        label: 'Browse relationships',
         onClick: (e) => {
           e.stopPropagation()
           diagram.openRelationshipsBrowser(modelFqn)
@@ -151,6 +153,7 @@ export const DeploymentElementActions = ({
       buttons.push({
         key: 'navigate',
         icon: <IconZoomScan />,
+        label: 'Open linked view',
         onClick: (e) => {
           e.stopPropagation()
           diagram.navigateTo(navigateTo, id)
@@ -161,6 +164,7 @@ export const DeploymentElementActions = ({
       buttons.push({
         key: 'relationships',
         icon: <IconTransform />,
+        label: 'Browse relationships',
         onClick: (e) => {
           e.stopPropagation()
           diagram.openRelationshipsBrowser(modelFqn)

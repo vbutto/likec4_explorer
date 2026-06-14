@@ -1,6 +1,6 @@
 import { cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
@@ -13,6 +13,7 @@ import { compoundActionBtn } from './actionbtns.css'
 type CompoundDetailsButtonProps = Simplify<
   BaseNodeProps & {
     icon?: ReactNode
+    label?: string
     onClick: (e: ReactMouseEvent) => void
   }
 >
@@ -39,6 +40,7 @@ export function CompoundDetailsButton({
     hovered: isHovered = false,
   },
   icon,
+  label = 'Element details',
   onClick,
 }: CompoundDetailsButtonProps) {
   // Debounce first "isHovered"
@@ -57,19 +59,21 @@ export function CompoundDetailsButton({
       className="likec4-compound-details details-button"
       tabIndex={-1}
     >
-      <ActionIcon
-        className={cx(
-          'nodrag nopan',
-          compoundActionBtn({
-            delay: isHovered && !isHoverDebounced,
-          }),
-          actionBtn({ variant: 'transparent' }),
-        )}
-        tabIndex={-1}
-        onClick={onClick}
-        onDoubleClick={stopPropagation}>
-        {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
-      </ActionIcon>
+      <Tooltip label={label} disabled={!label} fz="xs" color="dark" openDelay={400} offset={6}>
+        <ActionIcon
+          className={cx(
+            'nodrag nopan',
+            compoundActionBtn({
+              delay: isHovered && !isHoverDebounced,
+            }),
+            actionBtn({ variant: 'transparent' }),
+          )}
+          tabIndex={-1}
+          onClick={onClick}
+          onDoubleClick={stopPropagation}>
+          {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
+        </ActionIcon>
+      </Tooltip>
     </m.div>
   )
 }

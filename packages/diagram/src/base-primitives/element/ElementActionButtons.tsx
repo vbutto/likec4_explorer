@@ -1,6 +1,6 @@
 import { cx } from '@likec4/styles/css'
 import { actionBtn, actionButtons } from '@likec4/styles/recipes'
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, Tooltip } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
@@ -98,23 +98,32 @@ export function ElementActionButtons({
         onClick={stopPropagation}
       >
         {buttons.map((button, index) => (
-          <ActionIcon
-            component={m.button}
-            // layout
-            className={actionBtn({})}
+          <Tooltip
             key={`${id}-${button.key ?? index}`}
-            initial={false}
-            whileTap={{ scale: 1 }}
-            whileHover={{
-              scale: 1.3,
-            }}
-            tabIndex={-1}
-            onClick={button.onClick}
-            // Otherwise node receives click event and is selected
-            onDoubleClick={stopPropagation}
+            label={button.label}
+            disabled={!button.label}
+            fz="xs"
+            color="dark"
+            openDelay={400}
+            offset={6}
           >
-            {button.icon || <IconBolt />}
-          </ActionIcon>
+            <ActionIcon
+              component={m.button}
+              // layout
+              className={actionBtn({})}
+              initial={false}
+              whileTap={{ scale: 1 }}
+              whileHover={{
+                scale: 1.3,
+              }}
+              tabIndex={-1}
+              onClick={button.onClick}
+              // Otherwise node receives click event and is selected
+              onDoubleClick={stopPropagation}
+            >
+              {button.icon || <IconBolt />}
+            </ActionIcon>
+          </Tooltip>
         ))}
       </m.div>
     </div>
@@ -125,6 +134,8 @@ export namespace ElementActionButtons {
   export type Item = {
     key?: string
     icon?: ReactNode
+    /** Optional tooltip shown on hover. */
+    label?: string
     onClick: (e: ReactMouseEvent) => void
   }
 }

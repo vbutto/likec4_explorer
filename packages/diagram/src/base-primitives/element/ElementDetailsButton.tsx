@@ -1,7 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, Tooltip } from '@mantine/core'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
@@ -12,6 +12,7 @@ type ElementDetailsButtonProps = {
   selected?: boolean
   data: BaseNodeData
   icon?: ReactNode
+  label?: string
   onClick: (e: ReactMouseEvent) => void
 }
 
@@ -74,6 +75,7 @@ export function ElementDetailsButton({
     hovered: isHovered = false,
   },
   icon,
+  label = 'Element details',
   onClick,
 }: ElementDetailsButtonProps) {
   let variant: keyof typeof variants
@@ -89,23 +91,25 @@ export function ElementDetailsButton({
   }
   return (
     <Box className={cx(container, 'details-button')}>
-      <ActionIcon
-        className={cx(
-          'nodrag nopan',
-          actionBtn({ variant: 'transparent' }),
-        )}
-        component={m.button}
-        initial={false}
-        variants={variants}
-        animate={variant}
-        whileHover="whileHover"
-        whileTap="whileTap"
-        onClick={onClick}
-        onDoubleClick={stopPropagation}
-        tabIndex={-1}
-      >
-        {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
-      </ActionIcon>
+      <Tooltip label={label} disabled={!label} fz="xs" color="dark" openDelay={400} offset={6}>
+        <ActionIcon
+          className={cx(
+            'nodrag nopan',
+            actionBtn({ variant: 'transparent' }),
+          )}
+          component={m.button}
+          initial={false}
+          variants={variants}
+          animate={variant}
+          whileHover="whileHover"
+          whileTap="whileTap"
+          onClick={onClick}
+          onDoubleClick={stopPropagation}
+          tabIndex={-1}
+        >
+          {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
+        </ActionIcon>
+      </Tooltip>
     </Box>
   )
 }
