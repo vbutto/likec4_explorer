@@ -1,6 +1,11 @@
 name: pkg-pr-new
 
 on:
+  push:
+    branches:
+      - feat/nav-panel-improvements
+    tags:
+      - '**'
   workflow_dispatch:
   workflow_call:
 
@@ -17,7 +22,6 @@ jobs:
   publish:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
-    if: ${{ github.repository_owner == 'likec4'}}
     steps:
       - uses: actions/checkout@v6
 

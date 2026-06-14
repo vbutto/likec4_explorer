@@ -1,3 +1,10 @@
+<!-- FORK BANNER -->
+> **Fork.** This is a community fork of [likec4/likec4](https://github.com/likec4/likec4) (MIT)
+> with navigation-panel & Overview improvements. See **[FORK.md](./FORK.md)** for what changed
+> and how to install. Not affiliated with or endorsed by the LikeC4 maintainers.
+
+---
+
 # Architecture as a code
 
 Visualize, collaborate on, and evolve your software architecture with always up-to-date, live diagrams generated from your code.
