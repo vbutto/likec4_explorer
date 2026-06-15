@@ -34,13 +34,13 @@ This fork is distributed through [pkg.pr.new](https://pkg.pr.new): every push to
 distribution branch and every tag produces installable package URLs. Package names
 stay `likec4` / `@likec4/*` but resolve to this fork's build.
 
-Install by **tag** (recommended) or **commit SHA** — refs without slashes
-(a branch name like `feat/nav-panel-improvements` won't resolve in the URL):
+Install by **branch**, **tag**, or **commit SHA** (use refs without slashes):
 
 ```sh
-pnpm add -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@<tag>"
-# or a specific commit
-npm  i  -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@<sha>"
+# latest from the distribution branch
+pnpm add -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@explorer"
+# or pin a tag / commit
+pnpm add -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@<tag-or-sha>"
 ```
 
 Then use the CLI exactly like upstream:
