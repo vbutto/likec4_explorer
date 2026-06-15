@@ -38,9 +38,9 @@ Install by **branch**, **tag**, or **commit SHA** (use refs without slashes):
 
 ```sh
 # latest from the distribution branch
-pnpm add -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@explorer"
+pnpm add -D "https://pkg.pr.new/vbutto/likec4_explorer/likec4@explorer"
 # or pin a tag / commit
-pnpm add -D "https://pkg.pr.new/vbutto/likec4-explorer/likec4@<tag-or-sha>"
+pnpm add -D "https://pkg.pr.new/vbutto/likec4_explorer/likec4@<tag-or-sha>"
 ```
 
 Then use the CLI exactly like upstream:
