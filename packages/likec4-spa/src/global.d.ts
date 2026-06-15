@@ -9,6 +9,8 @@
 
 declare const __likec4styles: Map<string, string>
 declare const SHADOW_STYLE: string
+/** LikeC4 version, replaced at build time via Vite `define` (vite.config.ts / start-dev.ts). */
+declare const __LIKEC4_VERSION__: string
 
 interface ImportMetaEnv {
   readonly VITE_KROKI_D2_SVG_URL?: string

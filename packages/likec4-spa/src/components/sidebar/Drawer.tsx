@@ -3,6 +3,7 @@ import { useLocalStorage } from '@mantine/hooks'
 import { IconArrowLeft, IconPin, IconPinnedOff } from '@tabler/icons-react'
 import { Link, useMatches } from '@tanstack/react-router'
 import { memo } from 'react'
+import { AboutButton } from '../AboutModal'
 import type { GroupBy } from './data'
 import { DiagramsTree } from './DiagramsTree'
 import { SIDEBAR_WIDTH, SidebarDrawerOps, useDrawerOpened, useSidebarPinned } from './state'
@@ -56,6 +57,7 @@ function SidebarControls({ grouping, setGrouping, pinned, onTogglePin }: {
           {pinned ? <IconPinnedOff size={16} /> : <IconPin size={16} />}
         </ActionIcon>
       </Tooltip>
+      <AboutButton />
     </Group>
   )
 }

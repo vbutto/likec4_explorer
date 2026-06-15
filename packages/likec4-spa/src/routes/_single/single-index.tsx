@@ -32,6 +32,7 @@ import { IconChevronRight, IconFolderFilled, IconHome, IconLayoutDashboard } fro
 import { pageTitle } from 'likec4:app-config'
 import { useEffect, useMemo, useState } from 'react'
 import { randomInteger } from 'remeda'
+import { AboutButton } from '../../components/AboutModal'
 import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { OverviewSearch } from '../../components/search/OverviewSearch'
 import { SidebarDrawerOps, useSidebarPinned } from '../../components/sidebar/state'
@@ -106,7 +107,8 @@ function RouteComponent() {
         </NavigationPanel.Root>
         <NavigationPanel.Root panelPosition="right" css={{ position: 'relative', margin: '0' }}>
           <NavigationPanel.Body>
-            <div style={{ display: 'flex', alignItems: 'center', minHeight: 36 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, minHeight: 36 }}>
+              <AboutButton />
               <ColorSchemeToggle />
             </div>
           </NavigationPanel.Body>

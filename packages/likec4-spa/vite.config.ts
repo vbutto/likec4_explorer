@@ -27,6 +27,7 @@ export default defineConfig({
   mode: 'production',
   define: {
     'process.env.NODE_ENV': '"production"',
+    '__LIKEC4_VERSION__': JSON.stringify(packageJson.version),
   },
   css: {
     postcss: {

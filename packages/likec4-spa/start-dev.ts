@@ -8,6 +8,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
+import packageJson from './package.json' with { type: 'json' }
 
 const main = defineCommand({
   meta: {
@@ -42,6 +43,9 @@ const main = defineCommand({
         NODE_ENV: 'development',
       },
       mode: 'development',
+      define: {
+        '__LIKEC4_VERSION__': JSON.stringify(packageJson.version),
+      },
       css: {
         postcss: {
           plugins: [
