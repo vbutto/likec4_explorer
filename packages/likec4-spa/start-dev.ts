@@ -45,6 +45,7 @@ const main = defineCommand({
       mode: 'development',
       define: {
         '__LIKEC4_VERSION__': JSON.stringify(packageJson.version),
+        '__EXPLORER_VERSION__': JSON.stringify(packageJson.explorerVersion),
       },
       css: {
         postcss: {

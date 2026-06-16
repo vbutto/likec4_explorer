@@ -2,8 +2,9 @@ import { ActionIcon, Anchor, Divider, Group, Modal, Stack, Text, Tooltip } from 
 import { useDisclosure } from '@mantine/hooks'
 import { IconInfoCircle } from '@tabler/icons-react'
 
-// `__LIKEC4_VERSION__` is replaced at build time (see vite.config.ts / start-dev.ts define).
-// Declared as an ambient global in src/global.d.ts.
+// `__LIKEC4_VERSION__` (upstream LikeC4 release) and `__EXPLORER_VERSION__` (this fork's
+// own version, package.json "explorerVersion") are replaced at build time (see
+// vite.config.ts / start-dev.ts define). Both are declared as ambient globals in global.d.ts.
 
 /**
  * "About" button + modal. Reusable: dropped into the Overview header and the sidebar
@@ -40,8 +41,11 @@ export function AboutButton() {
 
           <Divider />
 
-          <Group justify="space-between" gap="xs">
-            <Text size="xs" c="dimmed">Version {__LIKEC4_VERSION__}</Text>
+          <Group justify="space-between" align="flex-end" gap="xs">
+            <Stack gap={0}>
+              <Text size="xs" c="dimmed">LikeC4 {__LIKEC4_VERSION__}</Text>
+              <Text size="xs" c="dimmed">Explorer {__EXPLORER_VERSION__}</Text>
+            </Stack>
             <Anchor href="https://likec4.dev" target="_blank" rel="noreferrer" size="xs">
               likec4.dev
             </Anchor>
