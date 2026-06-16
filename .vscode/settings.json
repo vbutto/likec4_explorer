@@ -1,4 +1,7 @@
 {
+  // Repo build scripts use zx, which shells out to bash. On Windows PowerShell resolves
+  // `bash` to the (broken) WSL launcher; Git Bash makes pnpm build/dev/test work.
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
   "js/ts.tsdk.path": "./node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "eslint.enable": false,

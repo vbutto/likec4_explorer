@@ -24,6 +24,28 @@
       }
     },
     {
+      "label": "build",
+      "type": "shell",
+      "command": "pnpm build",
+      "options": {
+        "env": {
+          "NODE_ENV": "production",
+        }
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "promptOnClose": false,
+      "presentation": {
+        "showReuseMessage": false,
+        "reveal": "always",
+        "group": "build",
+        "clear": true,
+      }
+    },
+    {
       "label": "tsc: build",
       "type": "shell",
       "command": "pnpm tsc --build --verbose",
@@ -37,8 +59,7 @@
         "$tsc"
       ],
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "kind": "build"
       },
       "dependsOn": "generate",
       "promptOnClose": false,

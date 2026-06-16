@@ -56,6 +56,13 @@ packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
 !packages/generators/src/drawio/dist-index.d.ts
 !packages/likec4-spa/src/global.d.ts
+# Compiled config/command outputs emitted next to their .ts (tsc --build), not under src/
+devops/**/*.js
+devops/**/*.d.ts
+packages/*/*.config.js
+packages/*/*.config.d.ts
+packages/*/*.config.mjs
+packages/*/*.config.d.mts
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*
