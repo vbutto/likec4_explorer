@@ -7,9 +7,10 @@
 
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-import type { LikeC4ViewsFolder } from '@likec4/core/model'
+import type { LikeC4ViewModel, LikeC4ViewsFolder } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
+import { compareNatural } from '@likec4/core/utils'
 import { StaticLikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { Markdown, NavigationPanel } from '@likec4/diagram/custom'
 import { css } from '@likec4/styles/css'
@@ -48,6 +49,16 @@ export const Route = createFileRoute('/_single/single-index')({
 
 const PREVIEW_LIMIT = 6
 
+const viewTitle = (vm: LikeC4ViewModel) => vm.title ?? vm.id
+
+/**
+ * Core keeps views in declaration order within a folder (it sorts only by folder
+ * path, stably — see LikeC4Model constructor). Sort them the same way the sidebar
+ * tree does, so both navigations agree.
+ */
+const sortViews = (views: ReadonlyArray<LikeC4ViewModel>): ReadonlyArray<LikeC4ViewModel> =>
+  [...views].sort((a, b) => compareNatural(viewTitle(a), viewTitle(b)))
+
 function RouteComponent() {
   const model = useLikeC4Model()
   const allViews = useLikeC4Views()
@@ -74,7 +85,7 @@ function RouteComponent() {
   }, [model, folderPath])
 
   const subFolders = folder.folders
-  const folderViews = folder.views
+  const folderViews = useMemo(() => sortViews(folder.views), [folder])
 
   return (
     <Container size={'xl'}>
@@ -128,7 +139,7 @@ function RouteComponent() {
         {folderViews.map((vm) => {
           const view = viewsById.get(vm.id)
           // vm.title is the short title (last segment); view.title is the full folder path.
-          return view ? <ViewCard key={vm.id} view={view} title={vm.title ?? vm.id} /> : null
+          return view ? <ViewCard key={vm.id} view={view} title={viewTitle(vm)} /> : null
         })}
       </SimpleGrid>
     </Container>
@@ -185,10 +196,10 @@ function FolderTile({ folder, onOpen }: {
   onOpen: () => void
 }) {
   const childFolders = folder.folders
-  const childViews = folder.views
+  const childViews = sortViews(folder.views)
   const children = [
     ...childFolders.map((f) => ({ kind: 'folder' as const, key: f.path, name: f.title })),
-    ...childViews.map((v) => ({ kind: 'view' as const, key: v.id, name: v.title ?? v.id })),
+    ...childViews.map((v) => ({ kind: 'view' as const, key: v.id, name: viewTitle(v) })),
   ]
   const preview = children.slice(0, PREVIEW_LIMIT)
   const rest = children.length - preview.length
