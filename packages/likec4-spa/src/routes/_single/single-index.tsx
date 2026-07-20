@@ -35,6 +35,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { randomInteger } from 'remeda'
 import { AboutButton } from '../../components/AboutModal'
 import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
+import { ProposalsButton } from '../../components/ProposalsButton'
 import { OverviewSearch } from '../../components/search/OverviewSearch'
 import { SidebarDrawerOps, useSidebarPinned } from '../../components/sidebar/state'
 import { useCurrentProject, useLikeC4Views } from '../../hooks'
@@ -119,6 +120,7 @@ function RouteComponent() {
         <NavigationPanel.Root panelPosition="right" css={{ position: 'relative', margin: '0' }}>
           <NavigationPanel.Body>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, minHeight: 36 }}>
+              <ProposalsButton />
               <AboutButton />
               <ColorSchemeToggle />
             </div>

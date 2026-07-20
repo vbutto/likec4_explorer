@@ -10,15 +10,20 @@ import { map } from 'remeda'
 import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
+import { mainProjects } from './proposals'
 import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
+// Keep the initial context in sync with __root's beforeLoad, which is the
+// authoritative one — proposals must not count as ordinary projects.
+const initialProjects = mainProjects(projects)
+
 const router = createTanstackRouter<RouteTree, 'always', true>({
   routeTree,
   context: {
-    projectId: projects[0].id,
-    projects: map(projects, p => p.id),
+    projectId: initialProjects[0].id,
+    projects: map(initialProjects, p => p.id),
   },
   InnerWrap: LikeC4ProjectsContext,
   basepath,

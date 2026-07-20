@@ -1,0 +1,11 @@
+{
+  "name": "split-checkout",
+  "title": "Split checkout service",
+  "metadata": {
+    "proposal": {
+      "status": "in-review",
+      "baseline": "baseline",
+      "summary": "Extract payment orchestration out of Checkout into its own service."
+    }
+  }
+}

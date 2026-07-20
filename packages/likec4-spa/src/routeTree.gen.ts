@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ProposalsImport } from './routes/proposals'
 import { Route as ProjectsImport } from './routes/projects'
 import { Route as SingleRouteImport } from './routes/_single/route'
 import { Route as IndexImport } from './routes/index'
@@ -38,6 +39,12 @@ import { Route as ProjectProjectIdViewViewIdDotImport } from './routes/project.$
 import { Route as ProjectProjectIdViewViewIdD2Import } from './routes/project.$projectId/view.$viewId.d2'
 
 // Create/Update Routes
+
+const ProposalsRoute = ProposalsImport.update({
+  id: '/proposals',
+  path: '/proposals',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ProjectsRoute = ProjectsImport.update({
   id: '/projects',
@@ -220,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsImport
+      parentRoute: typeof rootRoute
+    }
+    '/proposals': {
+      id: '/proposals'
+      path: '/proposals'
+      fullPath: '/proposals'
+      preLoaderRoute: typeof ProposalsImport
       parentRoute: typeof rootRoute
     }
     '/project/$projectId': {
@@ -469,6 +483,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof SingleRouteRouteWithChildren
   '/projects': typeof ProjectsRoute
+  '/proposals': typeof ProposalsRoute
   '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
   '/adhoc': typeof SingleAdhocRoute
   '/single-index': typeof SingleSingleIndexRoute
@@ -497,6 +512,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof SingleRouteRouteWithChildren
   '/projects': typeof ProjectsRoute
+  '/proposals': typeof ProposalsRoute
   '/adhoc': typeof SingleAdhocRoute
   '/single-index': typeof SingleSingleIndexRoute
   '/embed/$viewId': typeof SingleEmbedViewIdRoute
@@ -523,6 +539,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_single': typeof SingleRouteRouteWithChildren
   '/projects': typeof ProjectsRoute
+  '/proposals': typeof ProposalsRoute
   '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
   '/_single/adhoc': typeof SingleAdhocRoute
   '/_single/single-index': typeof SingleSingleIndexRoute
@@ -553,6 +570,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/projects'
+    | '/proposals'
     | '/project/$projectId'
     | '/adhoc'
     | '/single-index'
@@ -580,6 +598,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/projects'
+    | '/proposals'
     | '/adhoc'
     | '/single-index'
     | '/embed/$viewId'
@@ -604,6 +623,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_single'
     | '/projects'
+    | '/proposals'
     | '/project/$projectId'
     | '/_single/adhoc'
     | '/_single/single-index'
@@ -633,6 +653,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SingleRouteRoute: typeof SingleRouteRouteWithChildren
   ProjectsRoute: typeof ProjectsRoute
+  ProposalsRoute: typeof ProposalsRoute
   ProjectProjectIdRouteRoute: typeof ProjectProjectIdRouteRouteWithChildren
 }
 
@@ -640,6 +661,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SingleRouteRoute: SingleRouteRouteWithChildren,
   ProjectsRoute: ProjectsRoute,
+  ProposalsRoute: ProposalsRoute,
   ProjectProjectIdRouteRoute: ProjectProjectIdRouteRouteWithChildren,
 }
 
@@ -656,6 +678,7 @@ export const routeTree = rootRoute
         "/",
         "/_single",
         "/projects",
+        "/proposals",
         "/project/$projectId"
       ]
     },
@@ -675,6 +698,9 @@ export const routeTree = rootRoute
     },
     "/projects": {
       "filePath": "projects.tsx"
+    },
+    "/proposals": {
+      "filePath": "proposals.tsx"
     },
     "/project/$projectId": {
       "filePath": "project.$projectId/route.tsx",
