@@ -9,6 +9,7 @@ type ProjectData = {
   id: string
   title: string | undefined
   landingPage: LikeC4ProjectConfig['landingPage']
+  metadata: LikeC4ProjectConfig['metadata']
 }
 
 const code = (projects: NonEmptyArray<ProjectData>) => `
@@ -53,6 +54,7 @@ export const projectsModule = {
         id: p.id,
         title: p.title,
         landingPage: p.config.landingPage,
+        metadata: p.config.metadata,
       }))),
       moduleType: 'js',
     }

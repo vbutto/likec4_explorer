@@ -5,12 +5,13 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import { DefaultMantineProvider, FramerMotionConfig } from '@likec4/diagram'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
+import { mainProjects } from '../proposals'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
 
 export type Context = {
@@ -39,9 +40,10 @@ export const Route = createRootRouteWithContext<Context>()({
     ],
   },
   beforeLoad: (): Context => {
-    const _projects = projects.length > 0
-      ? map(projects, p => p.id)
-      : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>
+    // Proposals are sandboxes surfaced in their own section — they must not
+    // count towards the single-vs-multi project decision, otherwise the first
+    // proposal would bounce the user off the baseline views to the projects page.
+    const _projects = map(mainProjects(projects), p => p.id)
     return {
       projects: _projects,
       projectId: _projects[0],

@@ -1,0 +1,39 @@
+specification {
+  element system
+  element service
+  element actor {
+    style {
+      shape person
+    }
+  }
+}
+
+model {
+  customer = actor 'Customer'
+
+  shop = system 'Shop' {
+    frontend = service 'Frontend'
+    checkout = service 'Checkout' {
+      description 'Places orders and talks to payments directly'
+    }
+    payments = service 'Payments'
+  }
+
+  customer -> shop.frontend 'browses'
+  shop.frontend -> shop.checkout 'places order'
+  shop.checkout -> shop.payments 'charges'
+}
+
+views {
+  view index {
+    title 'Shop landscape'
+    include *
+    autoLayout LeftRight
+  }
+
+  view shop of shop {
+    title 'Shop internals'
+    include *, customer
+    autoLayout LeftRight
+  }
+}

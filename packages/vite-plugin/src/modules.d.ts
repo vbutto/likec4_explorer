@@ -8,6 +8,7 @@ declare module 'likec4:projects' {
     id: ProjectId
     title?: string
     landingPage?: LandingPageConfig
+    metadata?: Record<string, unknown>
   }
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]

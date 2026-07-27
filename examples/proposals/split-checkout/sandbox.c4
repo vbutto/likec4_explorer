@@ -1,0 +1,44 @@
+import { shop } from 'baseline'
+
+specification {
+  element service {
+    style {
+      color green
+    }
+  }
+}
+
+model {
+  // proposed addition — no baseline counterpart
+  orchestrator = service 'Payment Orchestrator' {
+    description 'Owns retries, idempotency and provider fallback'
+    metadata {
+      proposal 'added'
+    }
+  }
+
+  // proposed change — local copy tracing to the baseline element
+  checkoutV2 = service 'Checkout (proposed)' {
+    description 'No longer talks to payments directly'
+    metadata {
+      proposal 'changed'
+      tracesTo '@baseline.shop.checkout'
+    }
+  }
+
+  shop.frontend -> checkoutV2 'places order'
+  checkoutV2 -> orchestrator 'delegates payment'
+  orchestrator -> shop.payments 'charges'
+}
+
+views {
+  view index {
+    title 'Split checkout (proposed)'
+    include
+      shop.frontend,
+      shop.payments,
+      checkoutV2,
+      orchestrator
+    autoLayout LeftRight
+  }
+}

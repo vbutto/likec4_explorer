@@ -11,6 +11,16 @@
       "port": 5173
     },
     {
+      "name": "likec4-proposals",
+      "runtimeExecutable": "pnpm",
+      "cwd": "${workspaceFolder}/packages/likec4-spa",
+      "runtimeArgs": [
+        "dev",
+        "../../examples/proposals"
+      ],
+      "port": 5173
+    },
+    {
       "name": "docs",
       "runtimeExecutable": "pnpm",
       "cwd": "${workspaceFolder}/apps/docs",
