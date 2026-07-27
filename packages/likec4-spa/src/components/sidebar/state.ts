@@ -23,10 +23,15 @@ export const SIDEBAR_WIDTH = 320
  * overlay drawer. Persisted in localStorage; `useLocalStorage` keeps every hook
  * instance in the same tab in sync, so the drawer and the page layout stay
  * consistent without a shared atom.
+ *
+ * Docked by default: browsing a large model is mostly navigation, and an overlay
+ * drawer that has to be reopened for every jump gets in the way. Users who prefer
+ * the drawer unpin once and the choice sticks — an existing stored value always
+ * wins over this default.
  */
 export const useSidebarPinned = () =>
   useLocalStorage<boolean>({
     key: 'likec4-sidebar-pinned',
-    defaultValue: false,
+    defaultValue: true,
     getInitialValueInEffect: false,
   })
