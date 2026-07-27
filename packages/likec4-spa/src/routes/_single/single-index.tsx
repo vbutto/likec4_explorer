@@ -39,6 +39,7 @@ import { ProposalsButton } from '../../components/ProposalsButton'
 import { OverviewSearch } from '../../components/search/OverviewSearch'
 import { SidebarDrawerOps, useSidebarPinned } from '../../components/sidebar/state'
 import { useCurrentProject, useLikeC4Views } from '../../hooks'
+import { visibleInNav } from '../../nav-visibility'
 import * as styles from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
@@ -86,7 +87,8 @@ function RouteComponent() {
   }, [model, folderPath])
 
   const subFolders = folder.folders
-  const folderViews = useMemo(() => sortViews(folder.views), [folder])
+  // Views tagged #hidden are dropped from the Overview (still reachable by URL).
+  const folderViews = useMemo(() => sortViews(visibleInNav(folder.views)), [folder])
 
   return (
     <Container size={'xl'}>
@@ -198,7 +200,7 @@ function FolderTile({ folder, onOpen }: {
   onOpen: () => void
 }) {
   const childFolders = folder.folders
-  const childViews = sortViews(folder.views)
+  const childViews = sortViews(visibleInNav(folder.views))
   const children = [
     ...childFolders.map((f) => ({ kind: 'folder' as const, key: f.path, name: f.title })),
     ...childViews.map((v) => ({ kind: 'view' as const, key: v.id, name: viewTitle(v) })),

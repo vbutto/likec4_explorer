@@ -4,6 +4,7 @@ import { useLikeC4Model } from '@likec4/diagram'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find } from 'remeda'
+import { visibleInNav } from '../../nav-visibility'
 
 interface DiagramTreeNodeData {
   label: string
@@ -96,5 +97,6 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-folders') {
   const model = useLikeC4Model()
-  return useMemo(() => buildDiagramTreeData([...model.views()], groupBy), [model, groupBy])
+  // Views tagged #hidden are dropped from the sidebar (still reachable by URL).
+  return useMemo(() => buildDiagramTreeData(visibleInNav([...model.views()]), groupBy), [model, groupBy])
 }
