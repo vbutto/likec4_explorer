@@ -3,7 +3,7 @@
   "private": true,
   "description": "Single-page application for rendering architecture diagrams",
   "version": "1.58.0",
-  "explorerVersion": "0.1.2",
+  "explorerVersion": "0.1.3",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
