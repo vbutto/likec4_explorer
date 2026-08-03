@@ -20,13 +20,14 @@ import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
-import { SidebarDrawerOps } from '../components/sidebar/state'
+import { useOpenNavigationHandler } from '../components/sidebar/state'
 import { useCurrentView } from '../hooks'
 
 export function ViewReact() {
   const navigate = useNavigate()
   const [view, setLayoutType] = useCurrentView()
   const model = useLikeC4Model()
+  const onOpenNavigation = useOpenNavigationHandler()
   const { dynamic } = useSearch({
     from: '__root__',
   })
@@ -80,7 +81,7 @@ export function ViewReact() {
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
-      onOpenNavigation={() => SidebarDrawerOps.open()}
+      onOpenNavigation={onOpenNavigation}
     >
       <ListenForDynamicVariantChange />
       <OpenRelationshipBrowserFromUrl />
