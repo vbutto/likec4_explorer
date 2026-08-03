@@ -26,7 +26,7 @@ import {
   IconLayoutDashboard,
   IconStack2,
 } from '@tabler/icons-react'
-import { useLocation, useMatches, useNavigate } from '@tanstack/react-router'
+import { useLocation, useMatches, useNavigate, useParams } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
@@ -60,16 +60,32 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
   const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
   const navigate = useNavigate()
+  // On multi-project routes the tree lives under `/project/$projectId`; on the
+  // single-project layout there is no projectId. Navigation targets differ.
+  const projectId = useParams({
+    strict: false,
+    select: (p) => (p as { projectId?: string }).projectId,
+  })
   const navigateTo = (viewId: string) => {
     SidebarDrawerOps.close()
-    void navigate({
-      to: '/view/$viewId/',
-      viewTransition: false,
-      params: { viewId },
-    })
+    if (projectId) {
+      void navigate({
+        to: '/project/$projectId/view/$viewId/',
+        viewTransition: false,
+        params: { projectId, viewId },
+      })
+    } else {
+      void navigate({
+        to: '/view/$viewId/',
+        viewTransition: false,
+        params: { viewId },
+      })
+    }
   }
   // Clicking a folder shows that hierarchy level in the Overview (main area).
   // Folder node values are prefixed with '@fs/' (see buildDiagramTreeData).
+  // Only single-project mode has a folder-explorer Overview; in project mode a
+  // folder click just expands/collapses the branch (see onClick below).
   const navigateToFolder = (nodeValue: string) => {
     const path = nodeValue.startsWith('@fs/') ? nodeValue.slice(4) : ''
     SidebarDrawerOps.close()
@@ -189,9 +205,12 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy, showPreview = true 
               onClick={(e) => {
                 e.stopPropagation()
                 if (hasChildren) {
-                  // Folder: show its level in the Overview and expand/collapse the node.
+                  // Folder: expand/collapse; in single-project mode also show its
+                  // level in the Overview (project mode has no folder Overview).
                   tree.toggleExpanded(node.value)
-                  navigateToFolder(node.value)
+                  if (!projectId) {
+                    navigateToFolder(node.value)
+                  }
                 } else {
                   navigateTo(node.value)
                 }

@@ -1,9 +1,11 @@
 import type { ProjectId } from '@likec4/core/types'
 import { Button, Container, Stack, Title } from '@mantine/core'
-import { createFileRoute, Link, notFound, Outlet, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound, Outlet, redirect, useMatches } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
+import { SidebarDrawer } from '../../components/sidebar/Drawer'
+import { SIDEBAR_WIDTH, useSidebarPinned } from '../../components/sidebar/state'
 import { ViewOutlet } from '../../components/ViewOutlet'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
 import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
@@ -57,14 +59,28 @@ export const Route = createFileRoute('/project/$projectId')({
 
 function RouteComponent() {
   const { $likec4model, projectId } = Route.useLoaderData()
+  const [pinned] = useSidebarPinned()
+  // Show the views sidebar on the interactive diagram page only (not export /
+  // embed / "view as code"), mirroring the single-project `_single` layout.
+  const showSidebar = useMatches({
+    select: (matches) => matches.some((m) => m.routeId === '/project/$projectId/view/$viewId/'),
+  })
   return (
     <ViewOutlet>
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4model={$likec4model}>
-            <ErrorBoundary FallbackComponent={Fallback}>
-              <Outlet />
-            </ErrorBoundary>
+            {showSidebar && <SidebarDrawer />}
+            <div
+              style={{
+                height: '100%',
+                marginInlineStart: showSidebar && pinned ? SIDEBAR_WIDTH : 0,
+                transition: 'margin-inline-start 150ms ease',
+              }}>
+              <ErrorBoundary FallbackComponent={Fallback}>
+                <Outlet />
+              </ErrorBoundary>
+            </div>
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
       </ErrorBoundary>

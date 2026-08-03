@@ -20,20 +20,21 @@ export const SidebarDrawerOps = {
  * Handler for the diagram's "open navigation" button — but ONLY on routes where a
  * `<SidebarDrawer/>` actually exists.
  *
- * `ViewReact`/`ViewEditor` are shared between the single-project `_single` layout
- * (which mounts the drawer, see `routes/_single/route.tsx`) and the multi-project
- * `/project/$projectId` routes (which do not). Passing `onOpenNavigation` makes the
- * built-in NavigationPanel go inert — the logo/breadcrumbs stop navigating and the
- * `NavPanelButton` becomes the only affordance — so on a route with no drawer it
- * would disable the working navigation and open nothing (this is exactly the bug
- * you hit after opening a Proposal, which lives under `/project/$projectId`).
- *
- * Return the handler only under `_single`; elsewhere return `undefined` so the
- * built-in navigation stays active.
+ * `ViewReact`/`ViewEditor` are shared by the single-project `_single` layout and the
+ * multi-project `/project/$projectId` routes. Both now mount `<SidebarDrawer/>` on
+ * their view pages (see the respective `route.tsx`), so the handler is valid on both.
+ * Passing `onOpenNavigation` makes the built-in NavigationPanel go inert — logo and
+ * breadcrumbs stop navigating and `NavPanelButton` becomes the affordance — which is
+ * only correct where the drawer actually exists. On any other route (e.g. export /
+ * embed) return `undefined` so the built-in navigation stays active.
  */
 export const useOpenNavigationHandler = (): (() => void) | undefined => {
   const hasSidebar = useMatches({
-    select: (matches) => matches.some((m) => m.routeId.startsWith('/_single')),
+    select: (matches) =>
+      matches.some((m) =>
+        m.routeId.startsWith('/_single')
+        || m.routeId.startsWith('/project/$projectId')
+      ),
   })
   return hasSidebar ? SidebarDrawerOps.open : undefined
 }
